@@ -251,6 +251,48 @@
             font-size: 14px;
         }
 
+        /* Решение */
+        .solution {
+            display: none;
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-top: 40px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .solution.active {
+            display: block;
+        }
+
+        .solution-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .solution-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .solution-content {
+            background-color: var(--light);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .solution-text {
+            font-size: 16px;
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
         /* Подвал */
         footer {
             background-color: var(--dark);
@@ -299,11 +341,11 @@
             .hero h1 {
                 font-size: 36px;
             }
-            
+            
             .subjects {
                 grid-template-columns: 1fr;
             }
-            
+            
             .footer-content {
                 flex-direction: column;
                 gap: 20px;
@@ -337,13 +379,13 @@
                     <h3>Геометрия</h3>
                     <p>Решение задач по геометрии с подробными объяснениями и чертежами.</p>
                 </div>
-                
+                
                 <div class="subject-card geography" data-subject="geography">
                     <div class="subject-icon">🌍</div>
                     <h3>География</h3>
                     <p>Ответы на вопросы по географии, карты и интересные факты о мире.</p>
                 </div>
-                
+                
                 <div class="subject-card music" data-subject="music">
                     <div class="subject-icon">🎵</div>
                     <h3>Музыка</h3>
@@ -358,9 +400,24 @@
                         ← Назад к предметам
                     </button>
                 </div>
-                
+                
                 <div class="exercise-list" id="exercise-list">
                     <!-- Упражнения будут добавляться динамически -->
+                </div>
+            </section>
+
+            <section class="solution" id="solution">
+                <div class="solution-header">
+                    <h2 class="solution-title" id="solution-title">Решение задания</h2>
+                    <button class="back-button" id="back-to-exercises">
+                        ← Назад к заданиям
+                    </button>
+                </div>
+                
+                <div class="solution-content">
+                    <div class="solution-text" id="solution-text">
+                        <!-- Текст решения будет добавляться динамически -->
+                    </div>
                 </div>
             </section>
         </div>
@@ -386,19 +443,64 @@
         // Данные упражнений
         const exercisesData = {
             geometry: [
-                { number: 1, title: "Задачи на углы", description: "Решение задач на нахождение углов в треугольниках и многоугольниках" },
-                { number: 2, title: "Теорема Пифагора", description: "Применение теоремы Пифагора для решения задач" },
-                { number: 3, title: "Площади фигур", description: "Вычисление площадей различных геометрических фигур" }
+                { 
+                    number: 1, 
+                    title: "Задачи на углы", 
+                    description: "Решение задач на нахождение углов в треугольниках и многоугольниках",
+                    solution: "Решение задачи на углы:\n\n1. Сумма углов треугольника равна 180°.\n2. В равнобедренном треугольнике углы при основании равны.\n3. Для нахождения неизвестного угла используйте формулу: угол = 180° - (сумма известных углов)."
+                },
+                { 
+                    number: 2, 
+                    title: "Теорема Пифагора", 
+                    description: "Применение теоремы Пифагора для решения задач",
+                    solution: "Решение с использованием теоремы Пифагора:\n\nТеорема Пифагора: a² + b² = c²\nГде a и b - катеты, c - гипотенуза.\n\nПример: если a = 3, b = 4, то c = √(3² + 4²) = √(9 + 16) = √25 = 5."
+                },
+                { 
+                    number: 3, 
+                    title: "Площади фигур", 
+                    description: "Вычисление площадей различных геометрических фигур",
+                    solution: "Формулы для вычисления площадей:\n\n1. Площадь треугольника: S = ½ * a * h\n2. Площадь прямоугольника: S = a * b\n3. Площадь круга: S = π * r²\n4. Площадь трапеции: S = ½ * (a + b) * h"
+                }
             ],
             geography: [
-                { number: 1, title: "Столицы мира", description: "Изучение столиц различных стран мира" },
-                { number: 2, title: "Климатические пояса", description: "Изучение климатических поясов Земли" },
-                { number: 3, title: "Природные зоны", description: "Изучение природных зон и их особенностей" }
+                { 
+                    number: 1, 
+                    title: "Столицы мира", 
+                    description: "Изучение столиц различных стран мира",
+                    solution: "Столицы некоторых стран мира:\n\n1. Россия - Москва\n2. Франция - Париж\n3. Германия - Берлин\n4. Япония - Токио\n5. США - Вашингтон\n6. Великобритания - Лондон\n7. Китай - Пекин\n8. Италия - Рим"
+                },
+                { 
+                    number: 2, 
+                    title: "Климатические пояса", 
+                    description: "Изучение климатических поясов Земли",
+                    solution: "Основные климатические пояса Земли:\n\n1. Экваториальный пояс\n2. Тропический пояс\n3. Умеренный пояс\n4. Полярный (арктический и антарктический) пояс\n\nКаждый пояс имеет свои особенности температуры, осадков и сезонности."
+                },
+                { 
+                    number: 3, 
+                    title: "Природные зоны", 
+                    description: "Изучение природных зон и их особенностей",
+                    solution: "Основные природные зоны Земли:\n\n1. Тундра\n2. Тайга\n3. Смешанные и широколиственные леса\n4. Степи\n5. Пустыни\n6. Саванны\n7. Влажные экваториальные леса\n\nКаждая зона характеризуется определенным типом растительности и животного мира."
+                }
             ],
             music: [
-                { number: 1, title: "Нотная грамота", description: "Основы нотной грамоты и чтение нот" },
-                { number: 2, title: "Музыкальные жанры", description: "Изучение различных музыкальных жанров" },
-                { number: 3, title: "Биографии композиторов", description: "Жизнь и творчество известных композиторов" }
+                { 
+                    number: 1, 
+                    title: "Что говорил Макар в песне «Джет»?", 
+                    description: "Анализ текста песни Макара",
+                    solution: "Текст песни «Джет» Макара:\n\nДжеб, ушёл, джеб, ушёл — джет\nМеня укачает Emirate\nБью по этажам в полуподвальном этаже\nНебо роняет снег, но я могу его поджечь"
+                },
+                { 
+                    number: 2, 
+                    title: "Кто сочинил песню «Шышлак 2.0»?", 
+                    description: "Авторство песни Шышлак 2.0",
+                    solution: "Песню «Шышлак 2.0» сочинил:\n\nYachech music"
+                },
+                { 
+                    number: 3, 
+                    title: "Из какой песни слова «Knee Guards Knee Guards Nickers»?", 
+                    description: "Определение песни по тексту",
+                    solution: "Слова «Knee Guards Knee Guards Nickers» из песни:\n\n«Burger king man» by AndrefNicka"
+                }
             ]
         };
 
@@ -408,18 +510,30 @@
         const exercisesTitle = document.getElementById('exercises-title');
         const exerciseList = document.getElementById('exercise-list');
         const backButton = document.getElementById('back-button');
+        const solutionSection = document.getElementById('solution');
+        const solutionTitle = document.getElementById('solution-title');
+        const solutionText = document.getElementById('solution-text');
+        const backToExercisesButton = document.getElementById('back-to-exercises');
+
+        // Текущий выбранный предмет
+        let currentSubject = '';
 
         // Обработчики событий для карточек предметов
         subjectCards.forEach(card => {
             card.addEventListener('click', () => {
-                const subject = card.getAttribute('data-subject');
-                showExercises(subject);
+                currentSubject = card.getAttribute('data-subject');
+                showExercises(currentSubject);
             });
         });
 
-        // Обработчик для кнопки "Назад"
+        // Обработчик для кнопки "Назад к предметам"
         backButton.addEventListener('click', () => {
             hideExercises();
+        });
+
+        // Обработчик для кнопки "Назад к заданиям"
+        backToExercisesButton.addEventListener('click', () => {
+            hideSolution();
         });
 
         // Функция показа упражнений
@@ -431,10 +545,10 @@
                 music: 'Музыка'
             };
             exercisesTitle.textContent = `Упражнения по ${subjectNames[subject]}`;
-            
+            
             // Очищаем список упражнений
             exerciseList.innerHTML = '';
-            
+            
             // Добавляем упражнения
             exercisesData[subject].forEach(exercise => {
                 const exerciseItem = document.createElement('div');
@@ -444,12 +558,19 @@
                     <div class="exercise-title">${exercise.title}</div>
                     <div class="exercise-desc">${exercise.description}</div>
                 `;
+                
+                // Добавляем обработчик клика на упражнение
+                exerciseItem.addEventListener('click', () => {
+                    showSolution(exercise);
+                });
+                
                 exerciseList.appendChild(exerciseItem);
             });
-            
+            
             // Показываем секцию упражнений
             exercisesSection.classList.add('active');
-            
+            solutionSection.classList.remove('active');
+            
             // Прокручиваем к упражнениям
             exercisesSection.scrollIntoView({ behavior: 'smooth' });
         }
@@ -457,9 +578,31 @@
         // Функция скрытия упражнений
         function hideExercises() {
             exercisesSection.classList.remove('active');
-            
+            solutionSection.classList.remove('active');
+            
             // Прокручиваем к началу страницы
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Функция показа решения
+        function showSolution(exercise) {
+            // Устанавливаем заголовок и текст решения
+            solutionTitle.textContent = `Решение задания ${exercise.number}: ${exercise.title}`;
+            solutionText.textContent = exercise.solution;
+            
+            // Показываем секцию решения
+            solutionSection.classList.add('active');
+            
+            // Прокручиваем к решению
+            solutionSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Функция скрытия решения
+        function hideSolution() {
+            solutionSection.classList.remove('active');
+            
+            // Прокручиваем к упражнениям
+            exercisesSection.scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 </body>
