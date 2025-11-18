@@ -300,9 +300,9 @@
             white-space: pre-line;
         }
 
-        /* Секретная страница - ИЗМЕНЕНО: скрыта по умолчанию */
+        /* Секретная страница - ИЗМЕНЕНО: полностью скрыта */
         .secret-page {
-            display: none;
+            display: none !important;
             position: fixed;
             top: 0;
             left: 0;
@@ -319,7 +319,7 @@
         }
 
         .secret-page.active {
-            display: flex;
+            display: flex !important;
             animation: secretReveal 1s ease;
         }
 
@@ -346,6 +346,7 @@
             font-size: 14px;
             backdrop-filter: blur(10px);
             z-index: 1001;
+            display: none;
         }
 
         .back-to-main {
@@ -409,7 +410,7 @@
     </style>
 </head>
 <body>
-    <div class="secret-counter" id="secret-counter" style="display: none;">
+    <div class="secret-counter" id="secret-counter">
         Нажатий: <span id="press-count">0</span>/10
     </div>
 
@@ -497,7 +498,7 @@
         </div>
     </footer>
 
-    <!-- Секретная страница - ВЫНЕСЕНА ОТДЕЛЬНО -->
+    <!-- Секретная страница - ВЫНЕСЕНА ОТДЕЛЬНО И ПОЛНОСТЬЮ СКРЫТА -->
     <section class="secret-page" id="secret-page">
         <h1 class="secret-title">Привет. Ниг.</h1>
         <p class="secret-subtitle">Ты нашел пасхалку! 🎉</p>
@@ -640,6 +641,9 @@
             
             // Включаем прокрутку
             document.body.style.overflow = 'auto';
+            
+            // Сбрасываем счетчик нажатий
+            rPressCount = 0;
         });
 
         // ... остальной код для работы с предметами и упражнениями ...
