@@ -98,6 +98,8 @@
             background-clip: text;
             color: transparent;
             font-weight: 800;
+            cursor: pointer;
+            user-select: none;
         }
 
         .hero p {
@@ -293,6 +295,46 @@
             white-space: pre-line;
         }
 
+        /* Секретная страница */
+        .secret-page {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            margin-top: 40px;
+            animation: secretReveal 1s ease;
+        }
+
+        .secret-page.active {
+            display: block;
+        }
+
+        .secret-title {
+            font-size: 72px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+        }
+
+        .secret-subtitle {
+            font-size: 24px;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .secret-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+
         /* Подвал */
         footer {
             background-color: var(--dark);
@@ -336,6 +378,17 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes secretReveal {
+            from { 
+                opacity: 0; 
+                transform: scale(0.8) rotate(-5deg);
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1) rotate(0);
+            }
+        }
+
         /* Адаптивность */
         @media (max-width: 768px) {
             .hero h1 {
@@ -350,6 +403,10 @@
                 flex-direction: column;
                 gap: 20px;
                 text-align: center;
+            }
+
+            .secret-title {
+                font-size: 48px;
             }
         }
     </style>
@@ -369,7 +426,7 @@
     <main>
         <div class="container">
             <section class="hero">
-                <h1>РешМишка</h1>
+                <h1 id="main-title">РешМишка</h1>
                 <p>Помощник в выполнении домашних заданий по школьным предметам. Выбирайте предмет и упражнение для получения решения.</p>
             </section>
 
@@ -418,6 +475,15 @@
                     <div class="solution-text" id="solution-text">
                         <!-- Текст решения будет добавляться динамически -->
                     </div>
+                </div>
+            </section>
+
+            <!-- Секретная страница -->
+            <section class="secret-page" id="secret-page">
+                <h1 class="secret-title">Привет. Ниг.</h1>
+                <p class="secret-subtitle">Ты нашел пасхалку! 🎉</p>
+                <div class="secret-counter" id="secret-counter" style="display: none;">
+                    Нажатий: <span id="press-count">0</span>/10
                 </div>
             </section>
         </div>
@@ -484,13 +550,12 @@
             ],
             music: [
                 { 
-                     number: 1, 
-                     title: "Что говорил Макан в песне «Джет»?",  // ← ИСПРАВЛЕНО
-                     description: "Анализ текста песни Макана",   // ← ИСПРАВЛЕНО
-                     solution: "Текст песни «Джет» Макана:\n\nДжеб, ушёл, джеб, ушёл — джет\nМеня укачает Emirate\nБью по этажам в полуподвальном этаже\nНебо роняет снег, но я могу его поджечь"
+                    number: 1, 
+                    title: "Что говорил Макан в песне «Джет»?", 
+                    description: "Анализ текста песни Макана",
+                    solution: "Текст песни «Джет» Макана:\n\nДжеб, ушёл, джеб, ушёл — джет\nМеня укачает Emirate\nБью по этажам в полуподвальном этаже\nНебо роняет снег, но я могу его поджечь"
                 },
-    // ... остальные задания
-            ]
+                { 
                     number: 2, 
                     title: "Кто сочинил песню «Шышлак 2.0»?", 
                     description: "Авторство песни Шышлак 2.0",
@@ -515,9 +580,75 @@
         const solutionTitle = document.getElementById('solution-title');
         const solutionText = document.getElementById('solution-text');
         const backToExercisesButton = document.getElementById('back-to-exercises');
+        const mainTitle = document.getElementById('main-title');
+        const secretPage = document.getElementById('secret-page');
+        const secretCounter = document.getElementById('secret-counter');
+        const pressCount = document.getElementById('press-count');
+
+        // Переменные для пасхалки
+        let rPressCount = 0;
+        let lastPressTime = 0;
+        const PRESS_TIMEOUT = 2000; // 2 секунды между нажатиями
 
         // Текущий выбранный предмет
         let currentSubject = '';
+
+        // Обработчик для пасхалки (нажатие на букву Р)
+        mainTitle.addEventListener('click', (e) => {
+            const currentTime = Date.now();
+            
+            // Проверяем время между нажатиями
+            if (currentTime - lastPressTime > PRESS_TIMEOUT) {
+                rPressCount = 0; // Сбрасываем счетчик если прошло больше 2 секунд
+            }
+            
+            rPressCount++;
+            lastPressTime = currentTime;
+            
+            // Показываем счетчик
+            secretCounter.style.display = 'block';
+            pressCount.textContent = rPressCount;
+            
+            // Анимация нажатия
+            mainTitle.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                mainTitle.style.transform = 'scale(1)';
+            }, 150);
+            
+            // Если нажали 10 раз - открываем секретную страницу
+            if (rPressCount >= 10) {
+                openSecretPage();
+            }
+            
+            // Скрываем счетчик через 2 секунды
+            setTimeout(() => {
+                if (rPressCount < 10) {
+                    secretCounter.style.display = 'none';
+                }
+            }, 2000);
+        });
+
+        // Функция открытия секретной страницы
+        function openSecretPage() {
+            // Скрываем все остальные секции
+            document.querySelector('.subjects').style.display = 'none';
+            exercisesSection.style.display = 'none';
+            solutionSection.style.display = 'none';
+            document.querySelector('.hero').style.display = 'none';
+            
+            // Показываем секретную страницу
+            secretPage.classList.add('active');
+            
+            // Прокручиваем к секретной странице
+            secretPage.scrollIntoView({ behavior: 'smooth' });
+            
+            // Меняем фон страницы
+            document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            
+            // Скрываем шапку и подвал
+            document.querySelector('header').style.display = 'none';
+            document.querySelector('footer').style.display = 'none';
+        }
 
         // Обработчики событий для карточек предметов
         subjectCards.forEach(card => {
