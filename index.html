@@ -100,6 +100,11 @@
             font-weight: 800;
             cursor: pointer;
             user-select: none;
+            transition: var(--transition);
+        }
+
+        .hero h1:hover {
+            transform: scale(1.05);
         }
 
         .hero p {
@@ -299,16 +304,21 @@
         .secret-page {
             display: none;
             text-align: center;
-            padding: 60px 20px;
+            padding: 100px 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-radius: var(--border-radius);
-            margin-top: 40px;
-            animation: secretReveal 1s ease;
+            margin: 40px 0;
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         .secret-page.active {
-            display: block;
+            display: flex;
+            animation: secretReveal 1s ease;
         }
 
         .secret-title {
@@ -333,43 +343,24 @@
             border-radius: 20px;
             font-size: 14px;
             backdrop-filter: blur(10px);
+            z-index: 1000;
         }
 
-        /* Подвал */
-        footer {
-            background-color: var(--dark);
+        .back-to-main {
+            background: rgba(255,255,255,0.2);
             color: white;
-            padding: 40px 0;
-            margin-top: 60px;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 700;
-            font-size: 20px;
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .footer-links a {
-            color: #adb5bd;
-            text-decoration: none;
+            border: 2px solid white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
             transition: var(--transition);
+            margin-top: 20px;
         }
 
-        .footer-links a:hover {
-            color: white;
+        .back-to-main:hover {
+            background: white;
+            color: #667eea;
         }
 
         /* Анимации */
@@ -408,10 +399,18 @@
             .secret-title {
                 font-size: 48px;
             }
+
+            .secret-page {
+                padding: 60px 20px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="secret-counter" id="secret-counter" style="display: none;">
+        Нажатий: <span id="press-count">0</span>/10
+    </div>
+
     <header>
         <div class="container">
             <div class="header-content">
@@ -430,7 +429,7 @@
                 <p>Помощник в выполнении домашних заданий по школьным предметам. Выбирайте предмет и упражнение для получения решения.</p>
             </section>
 
-            <section class="subjects">
+            <section class="subjects" id="subjects-section">
                 <div class="subject-card geometry" data-subject="geometry">
                     <div class="subject-icon">📐</div>
                     <h3>Геометрия</h3>
@@ -482,14 +481,12 @@
             <section class="secret-page" id="secret-page">
                 <h1 class="secret-title">Привет. Ниг.</h1>
                 <p class="secret-subtitle">Ты нашел пасхалку! 🎉</p>
-                <div class="secret-counter" id="secret-counter" style="display: none;">
-                    Нажатий: <span id="press-count">0</span>/10
-                </div>
+                <button class="back-to-main" id="back-to-main">Вернуться на главную</button>
             </section>
         </div>
     </main>
 
-    <footer>
+    <footer id="main-footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
@@ -571,27 +568,20 @@
         };
 
         // Элементы DOM
-        const subjectCards = document.querySelectorAll('.subject-card');
-        const exercisesSection = document.getElementById('exercises');
-        const exercisesTitle = document.getElementById('exercises-title');
-        const exerciseList = document.getElementById('exercise-list');
-        const backButton = document.getElementById('back-button');
-        const solutionSection = document.getElementById('solution');
-        const solutionTitle = document.getElementById('solution-title');
-        const solutionText = document.getElementById('solution-text');
-        const backToExercisesButton = document.getElementById('back-to-exercises');
         const mainTitle = document.getElementById('main-title');
         const secretPage = document.getElementById('secret-page');
         const secretCounter = document.getElementById('secret-counter');
         const pressCount = document.getElementById('press-count');
+        const backToMain = document.getElementById('back-to-main');
+        const subjectsSection = document.getElementById('subjects-section');
+        const heroSection = document.querySelector('.hero');
+        const mainFooter = document.getElementById('main-footer');
+        const mainHeader = document.querySelector('header');
 
         // Переменные для пасхалки
         let rPressCount = 0;
         let lastPressTime = 0;
         const PRESS_TIMEOUT = 2000; // 2 секунды между нажатиями
-
-        // Текущий выбранный предмет
-        let currentSubject = '';
 
         // Обработчик для пасхалки (нажатие на букву Р)
         mainTitle.addEventListener('click', (e) => {
@@ -615,6 +605,8 @@
                 mainTitle.style.transform = 'scale(1)';
             }, 150);
             
+            console.log(`Нажатие ${rPressCount}/10`); // Для отладки
+            
             // Если нажали 10 раз - открываем секретную страницу
             if (rPressCount >= 10) {
                 openSecretPage();
@@ -630,27 +622,62 @@
 
         // Функция открытия секретной страницы
         function openSecretPage() {
-            // Скрываем все остальные секции
-            document.querySelector('.subjects').style.display = 'none';
-            exercisesSection.style.display = 'none';
-            solutionSection.style.display = 'none';
-            document.querySelector('.hero').style.display = 'none';
+            console.log('Открываем секретную страницу!'); // Для отладки
+            
+            // Скрываем основные элементы
+            subjectsSection.style.display = 'none';
+            document.getElementById('exercises').style.display = 'none';
+            document.getElementById('solution').style.display = 'none';
+            heroSection.style.display = 'none';
+            mainHeader.style.display = 'none';
+            mainFooter.style.display = 'none';
             
             // Показываем секретную страницу
             secretPage.classList.add('active');
             
-            // Прокручиваем к секретной странице
-            secretPage.scrollIntoView({ behavior: 'smooth' });
-            
-            // Меняем фон страницы
+            // Меняем фон body
             document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            document.body.style.color = 'white';
             
-            // Скрываем шапку и подвал
-            document.querySelector('header').style.display = 'none';
-            document.querySelector('footer').style.display = 'none';
+            // Прокручиваем к началу
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Сбрасываем счетчик
+            rPressCount = 0;
+            secretCounter.style.display = 'none';
         }
 
-        // Обработчики событий для карточек предметов
+        // Обработчик для кнопки возврата
+        backToMain.addEventListener('click', () => {
+            // Показываем основные элементы
+            subjectsSection.style.display = 'grid';
+            document.getElementById('exercises').style.display = 'none';
+            document.getElementById('solution').style.display = 'none';
+            heroSection.style.display = 'block';
+            mainHeader.style.display = 'block';
+            mainFooter.style.display = 'block';
+            
+            // Скрываем секретную страницу
+            secretPage.classList.remove('active');
+            
+            // Возвращаем стандартные стили
+            document.body.style.background = '#f5f7fb';
+            document.body.style.color = '#212529';
+        });
+
+        // ... остальной код для работы с предметами и упражнениями ...
+        const subjectCards = document.querySelectorAll('.subject-card');
+        const exercisesSection = document.getElementById('exercises');
+        const exercisesTitle = document.getElementById('exercises-title');
+        const exerciseList = document.getElementById('exercise-list');
+        const backButton = document.getElementById('back-button');
+        const solutionSection = document.getElementById('solution');
+        const solutionTitle = document.getElementById('solution-title');
+        const solutionText = document.getElementById('solution-text');
+        const backToExercisesButton = document.getElementById('back-to-exercises');
+
+        let currentSubject = '';
+
         subjectCards.forEach(card => {
             card.addEventListener('click', () => {
                 currentSubject = card.getAttribute('data-subject');
@@ -658,19 +685,15 @@
             });
         });
 
-        // Обработчик для кнопки "Назад к предметам"
         backButton.addEventListener('click', () => {
             hideExercises();
         });
 
-        // Обработчик для кнопки "Назад к заданиям"
         backToExercisesButton.addEventListener('click', () => {
             hideSolution();
         });
 
-        // Функция показа упражнений
         function showExercises(subject) {
-            // Устанавливаем заголовок
             const subjectNames = {
                 geometry: 'Геометрия',
                 geography: 'География',
@@ -678,10 +701,8 @@
             };
             exercisesTitle.textContent = `Упражнения по ${subjectNames[subject]}`;
             
-            // Очищаем список упражнений
             exerciseList.innerHTML = '';
             
-            // Добавляем упражнения
             exercisesData[subject].forEach(exercise => {
                 const exerciseItem = document.createElement('div');
                 exerciseItem.className = 'exercise-item';
@@ -691,7 +712,6 @@
                     <div class="exercise-desc">${exercise.description}</div>
                 `;
                 
-                // Добавляем обработчик клика на упражнение
                 exerciseItem.addEventListener('click', () => {
                     showSolution(exercise);
                 });
@@ -699,41 +719,35 @@
                 exerciseList.appendChild(exerciseItem);
             });
             
-            // Показываем секцию упражнений
+            exercisesSection.style.display = 'block';
             exercisesSection.classList.add('active');
             solutionSection.classList.remove('active');
             
-            // Прокручиваем к упражнениям
             exercisesSection.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Функция скрытия упражнений
         function hideExercises() {
             exercisesSection.classList.remove('active');
             solutionSection.classList.remove('active');
+            exercisesSection.style.display = 'none';
             
-            // Прокручиваем к началу страницы
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Функция показа решения
         function showSolution(exercise) {
-            // Устанавливаем заголовок и текст решения
             solutionTitle.textContent = `Решение задания ${exercise.number}: ${exercise.title}`;
             solutionText.textContent = exercise.solution;
             
-            // Показываем секцию решения
             solutionSection.classList.add('active');
+            solutionSection.style.display = 'block';
             
-            // Прокручиваем к решению
             solutionSection.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Функция скрытия решения
         function hideSolution() {
             solutionSection.classList.remove('active');
+            solutionSection.style.display = 'none';
             
-            // Прокручиваем к упражнениям
             exercisesSection.scrollIntoView({ behavior: 'smooth' });
         }
     </script>
