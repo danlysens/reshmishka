@@ -397,10 +397,6 @@
     </style>
 </head>
 <body>
-    <div class="secret-counter" id="secret-counter">
-        Нажатий: <span id="press-count">0</span>/10
-    </div>
-
     <header>
         <div class="container">
             <div class="header-content">
@@ -560,8 +556,6 @@
         // Элементы DOM
         const mainTitle = document.getElementById('main-title');
         const secretPage = document.getElementById('secret-page');
-        const secretCounter = document.getElementById('secret-counter');
-        const pressCount = document.getElementById('press-count');
         const backToMain = document.getElementById('back-to-main');
 
         // Переменные для пасхалки
@@ -581,27 +575,18 @@
             rPressCount++;
             lastPressTime = currentTime;
             
-            // Показываем счетчик
-            secretCounter.style.display = 'block';
-            pressCount.textContent = rPressCount;
-            
             // Анимация нажатия
             mainTitle.style.transform = 'scale(0.95)';
             setTimeout(() => {
                 mainTitle.style.transform = 'scale(1)';
-            }, 150);            
+            }, 150);
+            
+            console.log(`Нажатие ${rPressCount}/10`);
             
             // Если нажали 10 раз - открываем секретную страницу
             if (rPressCount >= 10) {
                 openSecretPage();
             }
-            
-            // Скрываем счетчик через 2 секунды
-            setTimeout(() => {
-                if (rPressCount < 10) {
-                    secretCounter.style.display = 'none';
-                }
-            }, 2000);
         });
 
         // Функция открытия секретной страницы
@@ -616,7 +601,6 @@
             
             // Сбрасываем счетчик
             rPressCount = 0;
-            secretCounter.style.display = 'none';
         }
 
         // Обработчик для кнопки возврата
